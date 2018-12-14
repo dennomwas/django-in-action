@@ -35,7 +35,9 @@ class CommonCategoryFields(models.Model):
     Model representing common fields in 
     Designation, Department, SermonCategory, EventCategory models
     """
-    category = models.CharField(max_length=50, blank=False, null=False,)
+    category = models.CharField(max_length=50, blank=False, null=False, unique=True,
+                                help_text="Enter a Category",
+                                error_messages={'unique': 'Category already exists.'})
     date_created = models.DateTimeField(auto_now_add=True)
     date_modified = models.DateTimeField(auto_now=True, blank=True, null=True)
 
@@ -107,13 +109,17 @@ class Event(CommonModelInfo, CommonCategoryFields):
     event_start_time = models.TimeField()
     event_end_time = models.TimeField()
 
+    # one to many relationship with event category
+    event_category = models.ForeignKey(
+        'EventCategory', on_delete=models.CASCADE)
+
     # one to many relationship with User
     individual_organized = models.ForeignKey(
-        settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+        settings.AUTH_USER_MODEL, on_delete=models.CASCADE, blank=True, null=True)
 
     # one to many relationship with Department
     department_organized = models.ForeignKey(
-        'Department', on_delete=models.CASCADE)
+        'Department', on_delete=models.CASCADE, blank=True, null=True)
 
 
 class Department(CommonCategoryFields):
